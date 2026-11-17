@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Columnar Transposition Cipher Simulator | CIS Interactive Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">CT</div>
+        <div class="brand-text">
+          <h1>
+            Columnar Transposition Simulator
+            <span class="syllabus-badge">CIS Syllabus</span>
+          </h1>
+          <p>Interactive Cryptographic Matrix &amp; Cryptanalysis Lab</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Light / Dark Mode Toggle Button -->
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light / Dark Mode" aria-label="Toggle Light or Dark Mode">
+          <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Quick Presets -->
+    <div class="preset-bar">
+      <span class="preset-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Syllabus Presets:
+      </span>
+      <button class="preset-pill" id="presetDefault">Classic: DISCOVERED / ZEBRAS</button>
+      <button class="preset-pill" id="presetTies">Tie-Breaker: ATTACK / BANANA</button>
+      <button class="preset-pill" id="presetPadded">Regular Padded: FLEE / CIPHER</button>
+      <button class="preset-pill" id="presetWWII">WWII SOE: DEFEND WALL / GERMAN</button>
+    </div>
+
+    <!-- Mode Selector Segmented Control -->
+    <div class="mode-selector" role="tablist" aria-label="Encryption or Decryption Mode">
+      <button id="modeEncryptBtn" class="mode-btn active" role="tab" aria-selected="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Encrypt Mode
+      </button>
+      <button id="modeDecryptBtn" class="mode-btn" role="tab" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+        Decrypt Mode
+      </button>
+    </div>
+
+    <!-- Card 1: Configuration & Inputs -->
+    <section class="card" aria-labelledby="inputSectionTitle">
+      <div class="card-header">
+        <h2 id="inputSectionTitle" class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span id="inputSectionHeading">Cipher Parameters &amp; Message</span>
+        </h2>
+        <span class="card-tag">SEC-01 // INPUT MATRIX</span>
+      </div>
+      <div class="card-body">
+        <div class="input-grid">
+          
+          <!-- Message Input Column -->
+          <div>
+            <div class="form-group">
+              <label for="messageInput" class="form-label">
+                <span id="messageLabel">Message (Plaintext)</span>
+                <span class="label-hint">Punctuation &amp; spaces stripped</span>
+              </label>
+              <textarea id="messageInput" class="form-textarea" rows="3" placeholder="Enter message here...">WE ARE DISCOVERED FLEE AT ONCE</textarea>
+              <div class="input-stats-strip">
+                <span class="stat-badge" id="rawCountBadge">Raw: 29 chars</span>
+                <span class="stat-badge" id="cleanCountBadge">Processed: 25 letters (A-Z)</span>
+                <span class="stat-badge" id="gridDimensionsBadge">Grid: 5 rows Ã— 6 cols</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keyword & Padding Column -->
+          <div>
+            <div class="form-group">
+              <label for="keywordInput" class="form-label">
+                <span>Keyword</span>
+                <span class="label-hint" id="keyLenHint">Length: 6 letters</span>
+              </label>
+              <input type="text" id="keywordInput" class="form-input" value="ZEBRAS" placeholder="e.g. ZEBRAS" maxlength="20" autocomplete="off" spellcheck="false">
+            </div>
+
+            <!-- Padding Settings -->
+            <div class="padding-controls-row">
+              <label class="checkbox-label" for="padCheckbox">
+                <input type="checkbox" id="padCheckbox">
+                <span>Pad last row to full rectangle</span>
+              </label>
+              <div class="pad-char-box">
+                <label for="padCharInput">Pad Char:</label>
+                <input type="text" id="padCharInput" class="pad-char-input" value="X" maxlength="1">
+              </div>
+            </div>
+
+            <!-- Key Alphabetical Ordering Ribbon -->
+            <div class="key-rank-ribbon">
+              <div class="key-rank-title">
+                <span>Key Alphabetical Ranking (Tie-break Left-to-Right)</span>
+              </div>
+              <div class="key-rank-letters" id="keyRankRibbon">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Card 2: Interactive Controls & Animation Step Banner -->
+    <div class="controls-strip">
+      <div class="btn-group">
+        <button id="resetBtn" class="btn" title="Reset animation to Step 0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          Reset
+        </button>
+        <button id="prevBtn" class="btn" title="Step backward one column">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Prev
+        </button>
+        <button id="nextBtn" class="btn btn-primary" title="Advance to next column in rank order">
+          Next Column
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button id="playPauseBtn" class="btn" title="Automatically step through columns">
+          <svg id="playIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg id="pauseIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          <span id="playPauseText">Auto Play</span>
+        </button>
+        <button id="showResultBtn" class="btn btn-accent-subtle" title="Skip animation and display complete result">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+          Show Result
+        </button>
+      </div>
+
+      <!-- Animation Speed Slider -->
+      <div class="speed-control">
+        <label for="speedSlider">Speed:</label>
+        <input type="range" id="speedSlider" min="200" max="1800" step="100" value="900" title="Adjust playback speed">
+        <span id="speedDisplay">0.9s</span>
+      </div>
+    </div>
+
+    <!-- Active Step Explanation Banner -->
+    <div class="step-banner" role="region" aria-live="polite">
+      <div class="step-badge" id="stepCounterBadge">Step 0 / 6</div>
+      <div style="flex:1;">
+        <div class="step-message" id="stepExplanation">
+          Plaintext message inscribed row by row. Ready to read columns in alphabetical rank order (1 to 6).
+        </div>
+        <div class="step-progress-track">
+          <div class="step-progress-fill" id="stepProgressFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: The Transposition Grid Visualization -->
+    <section class="card" aria-labelledby="matrixTitle">
+      <div class="card-header">
+        <h2 id="matrixTitle" class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+          <span id="matrixHeading">Transposition Matrix (Graph-Paper View)</span>
+        </h2>
+        <span class="card-tag" id="matrixStateTag">READY</span>
+      </div>
+      
+      <div class="grid-viewport-wrapper" id="gridWrapper">
+        <div id="gridContainer">
+          <!-- Dynamically generated HTML Table -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Card 4: Output & Round-Trip Verification -->
+    <section class="card output-card" aria-labelledby="outputTitle">
+      <div class="card-header">
+        <h2 id="outputTitle" class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          <span id="outputHeading">Ciphertext Output</span>
+        </h2>
+        <div class="output-toolbar">
+          <div class="format-pills">
+            <button class="format-btn active" id="fmtChunksBtn">Chunks</button>
+            <button class="format-btn" id="fmtFiveBtn">Blocks of 5</button>
+            <button class="format-btn" id="fmtContinuousBtn">Continuous</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <button class="btn btn-accent-subtle" id="stripPadBtn" style="display:none; padding: 0.25rem 0.65rem; font-size: 0.75rem;" title="Trim trailing padding characters">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+              <span id="stripPadBtnText">Trim Padding 'X'</span>
+            </button>
+            <button class="btn btn-icon" id="copyOutputBtn" title="Copy output text to clipboard">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        
+        <!-- Live Output Display Area -->
+        <div class="output-display-box" id="outputDisplay">
+          <!-- Dynamically populated tokens -->
+        </div>
+
+        <!-- Round Trip Button Strip -->
+        <div class="round-trip-strip">
+          <div class="round-trip-text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Feed the output back into the message box to verify complete round-trip accuracy.</span>
+          </div>
+          <button id="useResultBtn" class="btn btn-primary" title="Feed output as input and toggle mode">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+            <span id="useResultText">Use Result as Decrypt Input</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Card 5: Comprehensive Cryptography & Information Security Syllabus Explanation -->
+    <section class="card" aria-labelledby="eduTitle">
+      <div class="card-header">
+        <h2 id="eduTitle" class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Cryptographic Analysis &amp; Syllabus Theory
+        </h2>
+        <span class="card-tag">THEORY &amp; CRYPTANALYSIS</span>
+      </div>
+      <div class="card-body">
+        
+        <!-- Educational Navigation Tabs -->
+        <div class="edu-tabs" role="tablist">
+          <button class="edu-tab-btn active" role="tab" id="tabAlgorithm" data-target="paneAlgorithm">1. Algorithm Mechanics</button>
+          <button class="edu-tab-btn" role="tab" id="tabWeaknesses" data-target="paneWeaknesses">2. Vulnerabilities &amp; Cryptanalysis</button>
+          <button class="edu-tab-btn" role="tab" id="tabFrequency" data-target="paneFrequency">3. Frequency &amp; IoC Inspector</button>
+          <button class="edu-tab-btn" role="tab" id="tabHistory" data-target="paneHistory">4. Historical &amp; Modern Context</button>
+        </div>
+
+        <!-- Tab 1: Algorithm Mechanics -->
+        <div class="edu-pane active" id="paneAlgorithm">
+          <div class="edu-article">
+            <h3>How Columnar Transposition Works</h3>
+            <p>
+              The <strong>Columnar Transposition Cipher</strong> belongs to the family of <em>transposition (permutation) ciphers</em>. 
+              Unlike substitution ciphers (e.g., Caesar, Monoalphabetic, VigenÃ¨re) which change the identities of characters, 
+              transposition ciphers preserve letter identities and only rearrange their positional indices.
+            </p>
+
+            <div class="edu-callout">
+              <strong>Core Rule:</strong> The message is inscribed horizontally into a grid row by row, and then read out vertically column by column according to the alphabetical order of the keyword letters.
+            </div>
+
+            <h3>Key Alphabetical Ranking with Tie-Breaking</h3>
+            <p>
+              Given a keyword of length \(K\), each letter is assigned an integer rank from \(1\) to \(K\) based on its alphabetical position.
+              When duplicate letters appear, ties are broken strictly <strong>from left to right</strong>.
+            </p>
+            <ul>
+              <li><strong>Example 1 (ZEBRAS):</strong> Alphabetical order is A(1), B(2), E(3), R(4), S(5), Z(6). Ranks: <code>[6, 3, 2, 4, 1, 5]</code>.</li>
+              <li><strong>Example 2 (BANANA):</strong> Letters: B, A, N, A, N, A. Sorted: A(1), A(2), A(3), B(4), N(5), N(6). Breaking ties left-to-right assigns Pos 1 &rarr; 1, Pos 3 &rarr; 2, Pos 5 &rarr; 3, Pos 0 &rarr; 4, Pos 2 &rarr; 5, Pos 4 &rarr; 6. Resulting ranks: <code>[4, 1, 5, 2, 6, 3]</code>.</li>
+            </ul>
+
+            <h3>Regular vs. Irregular Transposition</h3>
+            <ul>
+              <li><strong>Regular (Padded):</strong> Null characters (traditionally 'X') are appended to pad the last row, forming a complete rectangle of size \(R \times K\). Every column has exactly \(R\) letters.</li>
+              <li><strong>Irregular (Unpadded):</strong> No padding is added. If message length \(L\) is not a multiple of \(K\), the remainder \(rem = L \pmod K\) determines the column lengths: the first \(rem\) physical columns have length \(\lceil L/K \rceil\), while the remaining columns have length \(\lfloor L/K \rfloor\).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 2: Vulnerabilities & Cryptanalysis -->
+        <div class="edu-pane" id="paneWeaknesses">
+          <div class="edu-article">
+            <h3>Why Columnar Transposition is Weak</h3>
+            <p>
+              Despite scattering letters across the message, columnar transposition suffers from critical structural vulnerabilities that allow cryptanalysts to break it without the key:
+            </p>
+
+            <div class="edu-callout warning">
+              <strong>1. Complete Conservation of Unigram Frequencies:</strong><br>
+              Because no character is ever replaced, the relative frequency of every single letter in the ciphertext is <em>identical</em> to that of natural English plaintext. 
+              The letter 'E' remains the most frequent (~12.7%), followed by 'T' (~9.1%) and 'A' (~8.2%). 
+              An attacker computing the <strong>Index of Coincidence (IoC)</strong> immediately recognizes that the cipher is a transposition (\(IoC \approx 0.0667\)) rather than a polyalphabetic substitution (\(IoC \approx 0.0385\)).
+            </div>
+
+            <h3>2. Key Length Factoring (In Regular Transposition)</h3>
+            <p>
+              In regular (padded) transposition, the ciphertext length \(N\) is an exact multiple of the key length \(K\) (\(N = R \times K\)).
+              By finding the integer factors of \(N\), the cryptanalyst narrows the possible key lengths down to just a handful of candidates. For example, if \(N = 35\), \(K\) must be either 5 or 7.
+            </p>
+
+            <h3>3. Anagramming and Digram Frequency Matching</h3>
+            <p>
+              Even when the keyword is unknown, an attacker who guesses a key length \(K\) can cut the ciphertext into \(K\) column strips. 
+              Because English contains well-known high-frequency digraphs (e.g., <code>TH</code>, <code>HE</code>, <code>IN</code>, <code>ER</code>, <code>AN</code>, <code>RE</code>) and impossible digraphs (e.g., <code>QZ</code>, <code>JX</code>, <code>VK</code>), 
+              the cryptanalyst compares pairs of columns row by row. 
+              By sliding candidate columns side by side and scoring bigram plausibility (a process known as <strong>multiple anagramming</strong>), the correct column permutation can be rapidly reconstructed in polynomial time.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Frequency & IoC Inspector -->
+        <div class="edu-pane" id="paneFrequency">
+          <div class="edu-article">
+            <h3>Live Message Frequency &amp; Index of Coincidence (IoC)</h3>
+            <p>
+              Notice how the frequency distribution of the ciphertext matches the plaintext. The Index of Coincidence measures the probability that two randomly selected letters are identical.
+            </p>
+            <div class="input-stats-strip" style="margin-bottom: 0.75rem;">
+              <span class="stat-badge" id="iocDisplay">Index of Coincidence (IoC): 0.067 (Plaintext English Match)</span>
+              <span class="stat-badge" id="factorsDisplay">Ciphertext Length Factors: 1, 5, 25</span>
+            </div>
+
+            <!-- Mini Live Frequency Chart -->
+            <div class="freq-chart-box">
+              <div class="key-rank-title">
+                <span>Letter Frequencies (A to Z) in Active Message</span>
+                <span>Max Count: <strong id="maxFreqCount">0</strong></span>
+              </div>
+              <div class="freq-bars-container" id="freqBarsContainer">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Historical & Modern Context -->
+        <div class="edu-pane" id="paneHistory">
+          <div class="edu-article">
+            <h3>Historical Significance</h3>
+            <ul>
+              <li><strong>American Civil War:</strong> Both Union and Confederate signal corps used route and columnar transposition variations with pre-agreed keywords.</li>
+              <li><strong>World War I (Ubchi Cipher):</strong> The German Army deployed an irregular double columnar transposition cipher named Ubchi. However, the French cryptanalyst Marcel Givierge broke it within months because German operators used predictable keys.</li>
+              <li><strong>World War II (SOE Poem Codes):</strong> British Special Operations Executive (SOE) field agents were issued poems printed on silk cloths to derive daily columnar transposition keys. Leo Marks famously reformed this system to prevent anagramming attacks.</li>
+            </ul>
+
+            <h3>Modern Perspective: Transposition in AES</h3>
+            <p>
+              While pure transposition is insecure on its own, it remains a fundamental building block of modern symmetric cryptography. 
+              Claude Shannon formulated the principles of <strong>Confusion</strong> (obscuring the relationship between key and ciphertext) and <strong>Diffusion</strong> (spreading plaintext statistics across the ciphertext).
+            </p>
+            <p>
+              In modern ciphers like the <strong>Advanced Encryption Standard (AES)</strong>, substitution (the <code>SubBytes</code> step) is alternatingly combined with transposition: <code>ShiftRows</code> (cyclically permuting bytes within rows) and <code>MixColumns</code> (matrix transposition &amp; diffusion across columns).
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="container">
+      Columnar Transposition Cipher Simulator &bull; Designed for Cryptography &amp; Information Security Education
+    </div>
+  </footer>
+
+  <!-- Toast Notification element -->
+  <div class="toast" id="toastNotice" role="status" aria-live="polite">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastMsg">Action completed</span>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       Interactive JavaScript Engine (Self-Contained)
+       ------------------------------------------------------------- -->
+  <script src="script.js"></script>
+</body>
+</html>
